@@ -71,7 +71,7 @@ Para alimentar as camadas de entrada foram escolhidas algumas entradas important
 Esses valores servem de insumo para a rede neural e são processados nas 3 camadas de processamento e na camada de saída.
 
 Para a escolha das variáveis utilizadas na rede, foram levadas em consideração, as variáveis abordadas em \cite{tau}.
-Estudo que aborda influências no Mercado e a Examinação de Variáveis Econômicas. 
+Estudo que aborda influências no Mercado e a Examinação de Variáveis Econômicas.
 
 O código da camada de entrada pode ser visualizado no link  \href{https://github.com/matmello/brainbot/tree/master/input}{Camada de Entrada}
 
@@ -313,3 +313,99 @@ A tabela a seguir mostra a análise percentual dos resultados obtidos:
 Os resultados neste contexto foram razoavelmente satisfatórios, mas apresentaram efetividade menor do que se comparado com a amostra de 200 ciclos.
 
 \pagebreak
+
+\section[Integração com o Mercado]{Integração com o Mercado}
+
+De posse dos resultados de análise da rede neural, o próximo passo foi a integração com o mercado de moedas, buscando de fato automatizar a estratégia abordada e utilizar a saída da rede neural como entrada para a realização de transações no Mercado de Moedas para o contexto previamente definido.
+
+Para a integração foi utilizada uma abordagem orientada a componentes, em que cada componente compõe um software que comunica com os demais componentes e é imprescindível para o funcionamento geral da aplicação.
+
+Foram definidos os seguintes componentes:
+
+\begin{itemize}
+  \item Componente de Processamento e Análise de Dados (Rede Neural)
+	\item Componente de Gerenciamento e Execução de Transações
+	\item Componente de Comunicação
+\end{itemize}
+
+\subsection[Visão Geral da Aplicação]{Visão Geral da Aplicação}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[keepaspectratio=true,scale=0.6]{figuras/dia.png}
+	\caption{Visão Geral }
+	\label{fig12}
+\end{figure}
+
+\pagebreak
+
+Acima pode-se observar um esquemático que mostra a aplicação de integração e seus devidos componentes. Cada componente será melhor descrito em sua respectiva subseção abaixo.
+
+Foi esquematizado também um fluxo com as interações de componentes para ficar mais claro e tornar mais visível como é a integração entre eles:
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[keepaspectratio=true,scale=0.8]{figuras/comp.png}
+	\caption{Fluxograma }
+	\label{fig12}
+\end{figure}
+
+O ciclo construído busca testar o funcionamento da rede neural no mercado de moedas e possíveis melhorias e outras váriaveis deste processo estão programadas para serem abordadas na próxima etapa deste projeto.
+
+\pagebreak
+
+\subsection[Componente de Processamento e Análise de Dados (Rede Neural)]{Componente de Processamento e Análise de Dados (Rede Neural)}
+
+O Componente de Processamento e Análise de Dados é a rede neural já descrita neste trabalho, apenas algumas modificações foram feitas para integrá-la ao Sistema.
+Este componente é responsável pela análise dos dados coletados e pelo processamento que gerará as saídas necessárias para o Componente de Gerenciamento de Transações tomar quaisquer decisões.
+
+Abaixo a tela do componente sendo executado através do terminal Python:
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[keepaspectratio=true,scale=0.8]{figuras/tela1.png}
+	\caption{Tela 1 - Componente de Processamento}
+	\label{fig12}
+\end{figure}
+
+\pagebreak
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[keepaspectratio=true,scale=0.8]{figuras/tela2.png}
+	\caption{Tela 2 - Componente de Processamento}
+	\label{fig12}
+\end{figure}
+
+Pode-se notar a rede sendo executada com os dados colhidos. Ao final da execução tem-se a impressão "V" que corresponde a uma ordem de Venda, o protocolo de comunicação será melhor discutido na seção sobre o componente de comunicação.
+
+\pagebreak
+
+\subsection[Componente de Gerenciamento e Execução de Transações]{Componente de Gerenciamento e Execução de Transações}
+
+O Componente de Gerenciamento de Transações tem como objetivo coletar os dados do mercado a serem enviados para o Componente de Processamento pelo Componente de Comunicação e também receber as saídas esperadas para realizar uma transação no mercado.
+
+Abaixo, pode-se observar este componente em execução no Software Meta Trader:
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[keepaspectratio=true,scale=0.6]{figuras/meta.png}
+	\caption{Meta Trader}
+	\label{fig12}
+\end{figure}
+
+\pagebreak
+
+\subsection[Componente de Comunicação]{Componente de Comunicação}
+
+O componente de comunicação trata toda a integração entre os demais componentes, por serem desenvolvidos em plataformas e linguagens diferentes, foi difícil encontrar um método nativo de integração entre os outros 2 componentes.
+Sendo assim, optou-se por tratar toda a comunicação utilizando um arquivo de texto em comum, assim tanto o Componente de Gerenciamento de Transações quanto o Componente de Processamento poderiam ler e escrever neste arquivo, podendo de tal maneira comunicar-se um com o outro.
+
+Para que a troca de mensagens seja efetiva e que um componente responda corretamente às necessidades do outro, foi adotado o seguinte protocolo de comunicação:
+
+\begin{itemize}
+  \item Para dados de cotação, os valores referentes a uma hora são sempre representados em uma linha separada e separando as diferentes variáveis por vírgula (extensão .csv)
+	\item Para as ordens, têm-se que "V" = Ordem de Venda, "C"= Ordem de Compra e "N" = Neutro, ou não realizar transação alguma.
+\end{itemize}
+
+\subsection[Resultados]{Resultados}
